@@ -1166,18 +1166,10 @@ columnName(sqlite3_stmt *pStmt, int N, int useType)
 	assert(db != NULL);
 	n = sqlite3_column_count(pStmt);
 	if (N < n && N >= 0) {
-		N += useType * n;
-		sqlite3_mutex_enter(db->mutex);
-		assert(db->mallocFailed == 0);
-		ret = (const char *) sqlite3_value_text(&p->aColName[N]);
-		/* A malloc may have failed inside of the xFunc() call. If this
-		 * is the case, clear the mallocFailed flag and return NULL.
-		 */
-		if (db->mallocFailed) {
-			sqlite3OomClear(db);
-			ret = NULL;
-		}
-		sqlite3_mutex_leave(db->mutex);
+		if (useType == COLNAME_NAME)
+			ret = p->columns[N].alias;
+		else
+			ret = p->columns[N].name;
 	}
 	return ret;
 }
@@ -1190,17 +1182,6 @@ const char *
 sqlite3_column_name(sqlite3_stmt * pStmt, int N)
 {
 	return columnName(pStmt, N, COLNAME_NAME);
-}
-
-/*
- * Return the name of the table from which a result column derives.
- * NULL is returned if the result column is an expression or constant or
- * anything else which is not an unambiguous reference to a database column.
- */
-const char *
-sqlite3_column_table_name(sqlite3_stmt * pStmt, int N)
-{
-	return columnName(pStmt, N, COLNAME_TABLE);
 }
 
 /*

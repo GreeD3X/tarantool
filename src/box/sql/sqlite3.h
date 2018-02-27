@@ -3926,9 +3926,6 @@ sqlite3_column_name(sqlite3_stmt *, int N);
  * or column that query result column was extracted from.
  */
 SQLITE_API const char *
-sqlite3_column_table_name(sqlite3_stmt *, int);
-
-SQLITE_API const char *
 sqlite3_column_origin_name(sqlite3_stmt *, int);
 
 /*
